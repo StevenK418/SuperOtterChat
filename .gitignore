@@ -1,0 +1,40 @@
+# Arduino IDE
+*.o
+*.a
+*.so
+*.elf
+*.hex
+*.bin
+*.eep
+*.elf.map
+*.lss
+
+# Build directories
+build/
+dist/
+output/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Arduino libraries and dependencies
+libraries/
+sketches/*/
+
+# Compiled binaries and objects
+*.out
+*.app
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Serial monitor logs
+*.log
