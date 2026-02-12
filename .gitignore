@@ -38,3 +38,6 @@ sketches/*/
 
 # Serial monitor logs
 *.log
+
+# Server Config
+ServerConfig.h
