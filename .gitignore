@@ -40,4 +40,3 @@ sketches/*/
 *.log
 
 # Server Config
-ServerConfig.h

@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <ServerConfig.h>
+#include "ServerConfig.h"
 
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
@@ -7,7 +7,7 @@ const char* password = WIFI_PASSWORD;
 // IRC Server settings
 #define IRC_PORT 6667
 #define MAX_CLIENTS 5
-#define SERVER_NAME "SuperOtterChat
+#define SERVER_NAME "SuperOtterChat"
 #define SERVER_VERSION "0.1"
 
 WiFiServer server(IRC_PORT);
