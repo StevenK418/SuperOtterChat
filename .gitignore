@@ -40,3 +40,4 @@ sketches/*/
 *.log
 
 # Server Config
+SuperOtterChatIRCServer/ServerConfig.h
