@@ -9,4 +9,14 @@ A nodeMCU based IRC (Internet Relay Chat) server.
 - Once done, in the Arduino IDE, go to Tools -> Serial Monitor. 
 - In the serial monitor, set the Baud rate to 115200
 - The IP address of the node MCU should be displayed. 
-- THe IP address can be used in an IRC client such as HexChat to connect to the server via Pport 6667. 
+- THe IP address can be used in an IRC client such as HexChat to connect to the server via port 6667. 
+
+## Commands
+- /nick SuperOtter          # Change nickname
+- /join #general            # Join #general channel
+- /msg #general hello!      # Send message to channel
+- /msg OtherUser hi there   # Send private message to user
+- /who #general             # See all users in #general
+- /part #general            # Leave the channel
+- /quit                     # Disconnect
+- /list                     # Gets the channel list
