@@ -3,7 +3,7 @@
 
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
-
+// Add at top with other globals
 unsigned long lastPingTime = 0;
 const unsigned long PING_INTERVAL = 60000; // 60 seconds
 
@@ -12,6 +12,7 @@ const unsigned long PING_INTERVAL = 60000; // 60 seconds
 #define MAX_CLIENTS 5
 #define SERVER_NAME "SuperOtterChat"
 #define SERVER_VERSION "0.1"
+#define MAX_CHANNELS 10
 
 
 WiFiServer server(IRC_PORT);
@@ -25,7 +26,16 @@ struct IRCUser {
   String channels;
 };
 
+struct IRCChannel {
+  String name;
+  String topic;
+  unsigned long createdTime;
+};
+
+
 IRCUser users[MAX_CLIENTS];
+IRCChannel channels[MAX_CHANNELS];
+int channelCount = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -35,6 +45,21 @@ void setup() {
   for (int i = 0; i < MAX_CLIENTS; i++) {
     users[i].registered = false;
   }
+
+  // Initialize predefined channels
+  channels[0].name = "#general";
+  channels[0].topic = "General discussion";
+  channels[0].createdTime = millis();
+  
+  channels[1].name = "#random";
+  channels[1].topic = "Random chat";
+  channels[1].createdTime = millis();
+  
+  channels[2].name = "#otters";
+  channels[2].topic = "Otter appreciation club";
+  channels[2].createdTime = millis();
+  
+  channelCount = 3;
   
   // Connect to WiFi
   Serial.println();
@@ -75,6 +100,8 @@ void loop() {
         // Send welcome on connect
         sendToClient(i, ":"+String(SERVER_NAME)+" NOTICE AUTH :*** Looking up your hostname...");
         sendToClient(i, ":"+String(SERVER_NAME)+" NOTICE AUTH :*** Found your hostname");
+
+        sendChannelList(i);
         
         connected = true;
         break;
@@ -325,6 +352,24 @@ void handleIRCCommand(int clientId, String line) {
       sendToClient(clientId, ":" + String(SERVER_NAME) + " 324 " + users[clientId].nick + " " + target + " +");
     }
   }
+  // Handle LIST command
+  else if (cmd == "LIST") {
+    if (!users[clientId].registered) return;
+    
+    sendToClient(clientId, ":" + String(SERVER_NAME) + " 321 " + users[clientId].nick + " Channel :Users Topic");
+    
+    for (int i = 0; i < channelCount; i++) {
+      int userCount = 0;
+      for (int j = 0; j < MAX_CLIENTS; j++) {
+        if (users[j].registered && users[j].channels.indexOf(channels[i].name) >= 0) {
+          userCount++;
+        }
+      }
+      sendToClient(clientId, ":" + String(SERVER_NAME) + " 322 " + users[clientId].nick + " " + channels[i].name + " " + userCount + " :" + channels[i].topic);
+    }
+    
+    sendToClient(clientId, ":" + String(SERVER_NAME) + " 323 " + users[clientId].nick + " :End of LIST");
+  }
 }
 
 void checkRegistration(int clientId) {
@@ -344,4 +389,20 @@ void checkRegistration(int clientId) {
     Serial.print("User registered: ");
     Serial.println(users[clientId].nick);
   }
+}
+
+void sendChannelList(int clientId) {
+  sendToClient(clientId, ":" + String(SERVER_NAME) + " 321 * Channel :Users Topic");
+  
+  for (int i = 0; i < channelCount; i++) {
+    int userCount = 0;
+    for (int j = 0; j < MAX_CLIENTS; j++) {
+      if (users[j].registered && users[j].channels.indexOf(channels[i].name) >= 0) {
+        userCount++;
+      }
+    }
+    sendToClient(clientId, ":" + String(SERVER_NAME) + " 322 * " + channels[i].name + " " + userCount + " :" + channels[i].topic);
+  }
+  
+  sendToClient(clientId, ":" + String(SERVER_NAME) + " 323 * :End of /LIST");
 }
