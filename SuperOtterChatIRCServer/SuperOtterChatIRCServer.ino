@@ -4,11 +4,15 @@
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 
+unsigned long lastPingTime = 0;
+const unsigned long PING_INTERVAL = 60000; // 60 seconds
+
 // IRC Server settings
 #define IRC_PORT 6667
 #define MAX_CLIENTS 5
 #define SERVER_NAME "SuperOtterChat"
 #define SERVER_VERSION "0.1"
+
 
 WiFiServer server(IRC_PORT);
 WiFiClient clients[MAX_CLIENTS];
@@ -112,6 +116,16 @@ void loop() {
       }
     }
   }
+
+  if (millis() - lastPingTime > PING_INTERVAL) {
+  for (int i = 0; i < MAX_CLIENTS; i++) {
+    if (clients[i] && clients[i].connected() && users[i].registered) {
+      sendToClient(i, "PING :" + String(SERVER_NAME));
+    }
+  }
+  
+  lastPingTime = millis();
+}
   
   delay(1);
 }
